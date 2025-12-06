@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RightMenuJS - Etkileşimli Dokümantasyon</title>
+    <!-- Fonts & Icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PrismJS (Syntax Highlighter) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-vsc-dark-plus.min.css"
+        rel="stylesheet" />
+    <!-- Library CSS -->
+    <link rel="stylesheet" href="../dist/rightmenu.css">
+
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --sidebar-w: 260px;
+            --header-h: 60px;
+            --text-main: #202124;
+            --text-muted: #5f6368;
+            --border: #dadce0;
+            --bg-body: #fff;
+            --bg-sidebar: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            height: var(--header-h);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border);
+            background: #fff;
+        }
+
+        .brand i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+
+        .nav-scroll {
+            overflow-y: auto;
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 8px 24px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            color: var(--primary);
+            background: #e8f0fe;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background: #e8f0fe;
+            border-left-color: var(--primary);
+            font-weight: 500;
+        }
+
+        .nav-group {
+            margin-bottom: 16px;
+        }
+
+        .nav-title {
+            padding: 0 24px 8px;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #9aa0a6;
+        }
+
+        /* Main */
+        .main {
+            flex: 1;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            padding: 40px 60px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-bottom: 100px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin: 0 0 16px;
+            font-weight: 400;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin: 48px 0 24px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 400;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 32px 0 16px;
+            font-weight: 500;
+        }
+
+        p {
+            color: #3c4043;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        /* Demo Box (Bootstrap Style) */
+        .demo-box {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 24px;
+            background: #fff;
+        }
+
+        .demo-preview {
+            padding: 40px;
+            background: #fff;
+            /* White bg for preview */
+            border-bottom: 1px solid var(--border);
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .demo-btn {
+            padding: 12px 24px;
+            background: #f1f3f4;
+            border: 1px solid #dadce0;
+            border-radius: 6px;
+            color: #3c4043;
+            font-weight: 500;
+            cursor: right-menu;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .demo-btn:hover {
+            background: #e8eaed;
+            border-color: #bdc1c6;
+        }
+
+        .demo-btn i {
+            margin-right: 8px;
+            color: var(--text-muted);
+        }
+
+        .demo-btn.dark-preview {
+            background: #333;
+            color: #fff;
+            border-color: #555;
+        }
+
+        .demo-code {
+            background: #f8f9fa;
+            border-radius: 0 0 8px 8px;
+            position: relative;
+        }
+
+        .demo-code pre {
+            margin: 0 !important;
+            border-radius: 0 0 8px 8px !important;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        td code {
+            font-family: 'Roboto Mono', monospace;
+            color: #d93025;
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fa-solid fa-code"></i>
+            <span>ContextJS Docs</span>
+        </div>
+        <div class="nav-scroll">
+            <div class="nav-group">
+                <div class="nav-title">Başlangıç</div>
+                <a href="#intro" class="nav-item">Giriş</a>
+                <a href="#install" class="nav-item">Kurulum</a>
+            </div>
+            <div class="nav-group">
+                <div class="nav-title">Örnekler</div>
+                <a href="#basic" class="nav-item">Temel Kullanım</a>
+                <a href="#icons" class="nav-item">İkonlar & Kısayollar</a>
+                <a href="#submenu" class="nav-item">Alt Menüler (Submenu)</a>
+                <a href="#dynamic" class="nav-item">Dinamik (Pasif/Gizli)</a>
+                <a href="#theme" class="nav-item">Koyu Tema (Dark)</a>
+            </div>
+            <div class="nav-group">
+                <div class="nav-title">API</div>
+                <a href="#options" class="nav-item">Ayarlar (Options)</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="container">
+
+            <section id="intro">
+                <h1>Context Menu Kütüphanesi</h1>
+                <p>Web uygulamalarınız için özelleştirilebilir, hızlı ve hafif bir sağ tık menü çözümü.</p>
+            </section>
+
+            <section id="install">
+                <h2>Kurulum</h2>
+                <p>Gerekli dosyaları projenize ekleyin (jQuery gerektirir).</p>
+                <div class="demo-box" style="border:none;">
+                    <div class="demo-code">
+                        <pre><code class="language-html"><!-- CSS -->
+<link rel="stylesheet" href="rightmenu.css">
+<!-- JS -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="rightmenu.js"></script></code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 1. TEMEL KULLANIM -->
+            <section id="basic">
+                <h2>1. Temel Kullanım</h2>
+                <p>En basit haliyle bir menü oluşturma. <code>selector</code> ile hedef elementi seçin ve
+                    <code>items</code> dizisiyle menü elemanlarını tanımlayın.
+                </p>
+
+                <div class="demo-box">
+                    <div class="demo-preview">
+                        <div class="demo-btn" id="demo-basic">
+                            <i class="fa-solid fa-mouse-pointer"></i> Buraya Sağ Tıkla (Basic)
+                        </div>
+                    </div>
+                    <div class="demo-code">
+                        <pre><code class="language-javascript">new RightMenu({
+    selector: '#demo-basic',
+    items: [
+        { label: 'Yenile', action: () => alert('Yenilendi!') },
+        { label: 'Ayarlar', action: () => alert('Ayarlar açıldı') },
+        { separator: true }, // Ayırıcı Çizgi
+        { label: 'Çıkış', action: () => alert('Çıkış yapıldı') }
+    ]
+});</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. İKONLAR VE KISAYOLLAR -->
+            <section id="icons">
+                <h2>2. İkonlar ve Kısayollar</h2>
+                <p>Menü öğelerine <code>icon</code> (FontAwesome class) ve <code>shortcut</code> (görsel metin)
+                    ekleyerek zenginleştirin.</p>
+
+                <div class="demo-box">
+                    <div class="demo-preview">
+                        <div class="demo-btn" id="demo-icons">
+                            <i class="fa-solid fa-icons"></i> İkonlu Menü (Sağ Tıkla)
+                        </div>
+                    </div>
+                    <div class="demo-code">
+                        <pre><code class="language-javascript">new RightMenu({
+    selector: '#demo-icons',
+    items: [
+        { 
+            label: 'Kopyala', 
+            icon: 'fa-regular fa-copy', // FontAwesome class
+            shortcut: 'Ctrl+C', 
+            action: () => console.log('Kopyalandı') 
+        },
+        { 
+            label: 'Yapıştır', 
+            icon: 'fa-regular fa-paste', 
+            shortcut: 'Ctrl+V', 
+            action: () => console.log('Yapıştırıldı') 
+        }
+    ]
+});</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. ALT MENÜLER -->
+            <section id="submenu">
+                <h2>3. Alt Menüler (Submenus)</h2>
+                <p>Sınırsız derinlikte alt menü oluşturmak için bir öğenin içine <code>items</code> dizisi eklemeniz
+                    yeterlidir.</p>
+
+                <div class="demo-box">
+                    <div class="demo-preview">
+                        <div class="demo-btn" id="demo-submenu">
+                            <i class="fa-solid fa-layer-group"></i> Alt Menülü Örnek
+                        </div>
+                    </div>
+                    <div class="demo-code">
+                        <pre><code class="language-javascript">new RightMenu({
+    selector: '#demo-submenu',
+    items: [
+        { label: 'Anasayfa', icon: 'fa-solid fa-home' },
+        { 
+            label: 'Sosyal Medya', 
+            icon: 'fa-solid fa-share-nodes',
+            items: [ // Alt Menü Başlangıcı
+                { label: 'Twitter', icon: 'fa-brands fa-twitter' },
+                { label: 'Instagram', icon: 'fa-brands fa-instagram' },
+                { 
+                    label: 'Diğer', 
+                    items: [ // 3. Seviye Alt Menü
+                        { label: 'LinkedIn' },
+                        { label: 'E-mail' }
+                    ]
+                }
+            ]
+        }
+    ]
+});</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. DİNAMİK DURUMLAR -->
+            <section id="dynamic">
+                <h2>4. Dinamik Durumlar (Disabled / Hidden)</h2>
+                <p>Menü öğelerini duruma göre pasif yapmak veya gizlemek için özelliklere fonksiyon atayabilirsiniz.</p>
+
+                <div class="demo-box">
+                    <div class="demo-preview">
+                        <div class="demo-btn" id="demo-dynamic" data-role="user">
+                            <i class="fa-solid fa-user-lock"></i> Dinamik Menü (Role: User)
+                        </div>
+                    </div>
+                    <div class="demo-code">
+                        <pre><code class="language-javascript">new RightMenu({
+    selector: '#demo-dynamic',
+    items: [
+        { label: 'Profil', icon: 'fa-user' },
+        { 
+            label: 'Yönetici Paneli (Sadece Admin)', 
+            icon: 'fa-solid fa-lock',
+            // Hedef elementin 'data-role' özelliği 'admin' değilse pasif olur
+            disabled: (target) => $(target).data('role') !== 'admin'
+            // Not: 'visible' fonksiyonu kullanılsaydı tamamen gizlenirdi
+        }
+    ]
+});</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. TEMA -->
+            <section id="theme">
+                <h2>5. Koyu Tema (Dark Mode)</h2>
+                <p>Yerleşik koyu temayı kullanmak için <code>theme: 'dark'</code> ayarını kullanın.</p>
+
+                <div class="demo-box">
+                    <div class="demo-preview" style="background:#2d2f31; border-bottom-color:#444;">
+                        <div class="demo-btn dark-preview" id="demo-dark">
+                            <i class="fa-solid fa-moon"></i> Koyu Tema (Dark)
+                        </div>
+                    </div>
+                    <div class="demo-code">
+                        <pre><code class="language-javascript">new RightMenu({
+    selector: '#demo-dark',
+    theme: 'dark', // Tema Ayarı
+    items: [
+        { label: 'Koyu Mod', icon: 'fa-solid fa-moon' },
+        { label: 'Ayarlar', icon: 'fa-solid fa-cog' }
+    ]
+});</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- API TABLE -->
+            <section id="options">
+                <h2>Ayarlar (Options)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Özellik</th>
+                            <th>Tip</th>
+                            <th>Açıklama</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>selector</code></td>
+                            <td>String</td>
+                            <td>Menünün hangi elementlerde çalışacağını belirten CSS seçicisi.</td>
+                        </tr>
+                        <tr>
+                            <td><code>items</code></td>
+                            <td>Array</td>
+                            <td>Menü yapısını oluşturan nesneler dizisi.</td>
+                        </tr>
+                        <tr>
+                            <td><code>theme</code></td>
+                            <td>String</td>
+                            <td><code>'light'</code> (varsayılan) veya <code>'dark'</code>.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="../dist/rightmenu.js"></script>
+    <script>
+        // --- 1. Basic Demo ---
+        new RightMenu({
+            selector: '#demo-basic',
+            items: [
+                { label: 'Yenile', icon: 'fa-solid fa-rotate-right', action: () => alert('Yenilendi!') },
+                { label: 'Ayarlar', icon: 'fa-solid fa-cog', action: () => alert('Ayarlar açıldı') },
+                { separator: true },
+                { label: 'Çıkış', icon: 'fa-solid fa-arrow-right-from-bracket', className: 'text-danger', action: () => alert('Çıkış yapıldı') }
+            ]
+        });
+
+        // --- 2. Icons Demo ---
+        new RightMenu({
+            selector: '#demo-icons',
+            items: [
+                { label: 'Kopyala', icon: 'fa-regular fa-copy', shortcut: 'Ctrl+C', action: () => alert('Kopyalandı') },
+                { label: 'Yapıştır', icon: 'fa-regular fa-paste', shortcut: 'Ctrl+V', action: () => alert('Yapıştırıldı') },
+                { separator: true },
+                { label: 'Kes', icon: 'fa-solid fa-scissors', shortcut: 'Ctrl+X', action: () => alert('Kesildi') }
+            ]
+        });
+
+        // --- 3. Submenu Demo ---
+        new RightMenu({
+            selector: '#demo-submenu',
+            items: [
+                { label: 'Anasayfa', icon: 'fa-solid fa-home' },
+                {
+                    label: 'Sosyal Medya',
+                    icon: 'fa-solid fa-share-nodes',
+                    items: [
+                        { label: 'Twitter', icon: 'fa-brands fa-twitter' },
+                        { label: 'Instagram', icon: 'fa-brands fa-instagram' },
+                        { separator: true },
+                        {
+                            label: 'Diğer',
+                            items: [
+                                { label: 'LinkedIn', icon: 'fa-brands fa-linkedin' },
+                                { label: 'E-mail', icon: 'fa-solid fa-envelope' }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        });
+
+        // --- 4. Dynamic Demo ---
+        new RightMenu({
+            selector: '#demo-dynamic',
+            items: [
+                { label: 'Profil Görüntüle', icon: 'fa-solid fa-user' },
+                {
+                    label: 'Yönetici Paneli (Sadece Admin)',
+                    icon: 'fa-solid fa-lock',
+                    disabled: (target) => $(target).data('role') !== 'admin'
+                },
+                {
+                    label: 'Rolü Değiştir (Admin Yap)',
+                    icon: 'fa-solid fa-wand-magic-sparkles',
+                    action: (data, target) => {
+                        $(target).data('role', 'admin').text('Dinamik Menü (Role: Admin)');
+                        alert('Rol Admin olarak değiştirildi! Tekrar sağ tıklayın.');
+                    }
+                }
+            ]
+        });
+
+        // --- 5. Dark Theme Demo ---
+        new RightMenu({
+            selector: '#demo-dark',
+            theme: 'dark',
+            items: [
+                { label: 'Koyu Mod', icon: 'fa-solid fa-moon' },
+                { label: 'Ayarlar', icon: 'fa-solid fa-cog' },
+                { separator: true },
+                { label: 'Yardım', icon: 'fa-solid fa-circle-question' }
+            ]
+        });
+
+        // --- Sidebar Logic ---
+        const navItems = document.querySelectorAll('.nav-item');
+        const sections = document.querySelectorAll('section');
+
+        // Scroll Spy
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= (sectionTop - 100)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href').includes(current)) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
