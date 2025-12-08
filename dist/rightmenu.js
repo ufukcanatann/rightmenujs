@@ -23,7 +23,7 @@ class RightMenu {
         this.rootMenu = null; // The root DOM element
         this.activeStack = []; // Stack of currently visible menu levels for keyboard navigation
         this.activeTarget = null; // The element that triggered the menu
-        
+
         this.init();
     }
 
@@ -35,7 +35,7 @@ class RightMenu {
 
         // Event delegation for right-click
         $(document).on('contextmenu', this.options.selector, (e) => this.handleRightMenu(e));
-        
+
         // Global events (only need to bind these once, but doing it per instance is safer for teardown if we implemented it)
         // To avoid duplicate handling, we check if this instance is the active one inside the handler
         $(document).on('click', (e) => this.handleClickOutside(e));
@@ -53,7 +53,7 @@ class RightMenu {
         if (RightMenu.activeInstance && RightMenu.activeInstance !== this) {
             RightMenu.activeInstance.hideAll();
         }
-        
+
         // 2. Close my own if open (reset state)
         this.hideAll();
 
@@ -71,7 +71,9 @@ class RightMenu {
         // Create and show the root menu
         this.rootMenu = this.createMenu(this.options.items, true);
         this.activeStack = [this.rootMenu]; // Initialize stack with root
-        this.showMenu(this.rootMenu, e.pageX, e.pageY);
+
+        // FIX: pageX/pageY → clientX/clientY (viewport-based, correct for fixed menus)
+        this.showMenu(this.rootMenu, e.clientX, e.clientY);
     }
 
     /**
@@ -134,7 +136,7 @@ class RightMenu {
             if (item.items && item.items.length > 0) {
                 li.addClass('has-submenu');
                 li.append($('<span>').addClass('right-menu-submenu-arrow'));
-                
+
                 // Recursively create submenu, but DON'T append to activeStack yet
                 const submenu = this.createMenu(item.items, false);
                 li.append(submenu);
@@ -143,13 +145,13 @@ class RightMenu {
                 li.on('click', (e) => {
                     if (isDisabled) return;
                     e.stopPropagation();
-                    
+
                     const data = this.activeTarget ? $(this.activeTarget).data() : {};
-                    
+
                     if (item.action) {
                         item.action(data, this.activeTarget);
                     }
-                    
+
                     if (this.options.onSelect) {
                         this.options.onSelect(item, this.activeTarget);
                     }
@@ -162,9 +164,9 @@ class RightMenu {
         });
 
         if (isRoot) {
-             $('body').append(menuEl);
+            $('body').append(menuEl);
         }
-        
+
         return menuEl;
     }
 
@@ -173,7 +175,7 @@ class RightMenu {
      */
     showMenu(menuEl, x, y) {
         menuEl.addClass('visible');
-        
+
         // Calculate collision with viewport
         const winW = $(window).width();
         const winH = $(window).height();
@@ -202,12 +204,12 @@ class RightMenu {
         if (this.rootMenu) {
             this.rootMenu.removeClass('visible');
             const menuToRemove = this.rootMenu;
-            setTimeout(() => menuToRemove.remove(), 200); 
+            setTimeout(() => menuToRemove.remove(), 200);
             this.rootMenu = null;
         }
-        
+
         this.activeStack = [];
-        
+
         if (typeof this.options.onHide === 'function' && RightMenu.activeInstance === this) {
             this.options.onHide(this.activeTarget);
         }
@@ -242,7 +244,7 @@ class RightMenu {
                 if (index >= items.length) index = 0;
                 this.focusItem(currentMenu, items.eq(index));
                 break;
-            
+
             case 'ArrowUp':
                 e.preventDefault();
                 index--;
@@ -269,11 +271,11 @@ class RightMenu {
                     // Remove current active class from the parent item to simulate 'leaving'
                     // Actually we might want to keep parent selected. Design choice.
                     // Let's pop back to parent menu.
-                    
+
                     // We need to 'unfocus' the submenu items? 
                     // No, CSS handles visibility based on Parent .active.
                     // If we remove active from Parent, submenu hides.
-                    
+
                     this.activeStack.pop();
                     const parentMenu = this.activeStack[this.activeStack.length - 1];
                     // Focus returns to the parent item, which is ALREADY active.
@@ -285,7 +287,7 @@ class RightMenu {
                 e.preventDefault();
                 if (activeItem.length) {
                     if (activeItem.hasClass('has-submenu')) {
-                         // Enter on submenu parent -> Open it (same as Right)
+                        // Enter on submenu parent -> Open it (same as Right)
                         const submenu = activeItem.children('.rightmenu-submenu');
                         if (submenu.length) {
                             this.activeStack.push(submenu);
